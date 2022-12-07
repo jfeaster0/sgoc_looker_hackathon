@@ -48,7 +48,18 @@ explore: order_items {
     AND
     CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY), INTERVAL 28 DAY)
     )
-  {% elsif orders.pop_name._parameter_value == 'a' %}
+  {% elsif orders.pop_name._parameter_value == '7_over_7' %}
+   (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY)
+    AND
+    CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY), INTERVAL 7 DAY)
+    )
+    or
+    (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY)
+    AND
+    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY), INTERVAL 28 DAY)
+    )
   {% elsif orders.pop_name._parameter_value == 'a' %}
   {% elsif orders.first_period_filter._in_query %}
     (
