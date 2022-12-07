@@ -69,7 +69,7 @@ view: order_items {
       value: "total_sale_price"
     }
     allowed_value: {
-      label: "Order Count"
+      label: "Count of Order"
       value: "orders.count"
     }
     allowed_value: {
@@ -78,14 +78,14 @@ view: order_items {
     }
   }
 
-  measure: dynamic_test {
-    label: "Filtered Measure"
+  measure: filtered_measure {
+    label_from_parameter: measure_selector
     description: "use measure selector to pick measure"
     type: number
     ## value_format: "#,##0.00"
     sql:
           {% if measure_selector._parameter_value == 'total_sale_price' %}
-           round(${sale_price},2)
+           ${total_sale_price}
           {% elsif measure_selector._parameter_value == 'orders.count' %}
            ${orders.count}
           {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
@@ -99,4 +99,115 @@ view: order_items {
            ${{ rendered_value }}
           {% endif %};;
   }
+
+## delta work
+  parameter: delta_picker {
+    type: unquoted
+    group_label: "Compare"
+    allowed_value: {
+      label: "% Delta"
+      value: "prc_change"
+    }
+    allowed_value: {
+      label: "Delta"
+      value: "change"
+    }
+    allowed_value: {
+      label: "Absolute Delta"
+      value: "abs_change"
+    }
+  }
+
+  measure: delta {
+    group_label: "Compare"
+    description: "delta calculation, pick with delta picker"
+    type: number
+    sql:
+    {%if delta_picker._parameter_value == 'change' %}
+    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${delta_value} ,2) else null end
+    {% elsif delta_picker._parameter_value == 'prc_change' %}
+    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${delta_prc}*100,2) else null end
+    {% elsif delta_picker._parameter_value == 'abs_change' %}
+    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${abs_delta_value},2) else null end
+    {% endif %}
+    ;;
+    html:  {% if delta_picker._parameter_value == 'change' %}
+          {{ rendered_value }}
+          {% elsif delta_picker._parameter_value == 'prc_change' %}
+          {{ rendered_value }} %
+          {% elsif delta_picker._parameter_value == 'abs_change' %}
+          {{ rendered_value }}
+          {% endif %};;
+  }
+
+
+  measure: total_filtered_measure {
+    group_label: "Compare"
+    description: "This generates the denomanator for most Delta calculations, not those that are compound metrics e.g eCPM"
+    hidden: yes
+    type: number
+    sql:
+    {% if measure_selector._parameter_value == 'total_sale_price' %}
+      sum(${total_sale_price})
+    {% elsif measure_selector._parameter_value == 'orders.count' %}
+      sum(${orders.count})
+    {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
+      sum(${products.total_retail_price})
+    {% else %}
+    "ERROR Message - Missing total cacluation for the delta, measure: total_filtered_measure"
+    {% endif %};;
+    }
+
+
+  measure: delta_value {
+    group_label: "Compare"
+    description: "delta value, not percentage"
+    type: number
+    sql:
+    ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure})
+
+  dimension: in_query_testing {
+    group_label: "Compare"
+    type: string
+    hidden: yes
+    sql:
+        PARTITION by
+        {%if order_items.id._is_selected %}
+        ${id},
+        {%endif%}
+        {%if order_items.inventory_item_id._is_selected %}
+        ${inventory_item_id},
+        {%endif%}
+        {%if order_items.order_id._is_selected %}
+        ${order_id},
+        {%endif%}
+        {%if order_items.returned_at._is_selected %}
+        ${returned_at},
+        {%endif%}
+        {%if order_items.sale_price._is_selected %}
+        ${sale_price},
+        {%endif%}
+        {% if true %}
+        1
+        {% endif %}
+
+      ;;
+  }
+
+  measure: delta_prc {
+    group_label: "Compare"
+    description: "Percent Change from First Period to Second Period"
+    type: number
+    value_format_name: percent_2
+    sql: (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/(${total_filtered_measure} - ${filtered_measure});;
+    }
+
+  measure: abs_delta_value {
+    group_label: "Compare"
+    description: "Absolute Change from First Period to Second Period"
+    type: number
+    sql: abs(${delta_value});;
+  }
+
+
 }
