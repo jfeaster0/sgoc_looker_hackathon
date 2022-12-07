@@ -8,6 +8,121 @@ view: orders {
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
 
+
+  ## POP
+  filter: first_period_filter {
+    group_label: "PoP"
+    type: date
+  }
+
+  filter: second_period_filter {
+    group_label: "PoP"
+    type: date
+  }
+
+   parameter: pop_name {
+    type: unquoted
+    group_label: "PoP"
+    allowed_value: {
+      label: "Quarter over Prior Year Quarter"
+      value: "yoy_qoq"
+    }
+    allowed_value: {
+      label: "28 over 28"
+      value: "28_over_28"
+    }
+    allowed_value: {
+      label: "7 over 7"
+      value: "7_over_7"
+    }
+    allowed_value: {
+      label: "DoD"
+      value: "dod"
+    }
+    allowed_value: {
+      label: "Same Day Last Week"
+      value: "sdlw"
+    }
+  }
+
+  dimension: period_selected {
+    group_label: "PoP"
+    sql:
+    {% if pop_name._parameter_value == 'yoy_qoq' %}
+      CASE
+          WHEN ${created_date} >= DATE_ADD('month',-3, DATE_TRUNC('quarter', cast(TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))
+          AND ${created_date} <= DATE_ADD('month',3, DATE_TRUNC('quarter',DATE_ADD('month',-3, DATE_TRUNC('quarter', cast( TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))))
+          then 'Second Period'
+          WHEN ${created_date} >= DATE_ADD('month',-15, DATE_TRUNC('quarter', cast( (TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))
+          AND ${created_date}  <= DATE_ADD('month',3, DATE_TRUNC('quarter',DATE_ADD('month',-15, DATE_TRUNC('quarter', cast( TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))))
+          then 'First Period'
+          END
+    {% else %}
+      CASE
+          WHEN ${created_date}  >= CAST( {% date_start first_period_filter %} as DATE)
+          AND ${created_date}<= CAST( {% date_end first_period_filter %} as DATE)
+          then 'First Period'
+          WHEN ${created_date} >= CAST( {% date_start second_period_filter%} as DATE)
+          AND ${created_date}  <= CAST ({% date_end second_period_filter %} as DATE)
+          then 'Second Period'
+          END
+    {% endif %}
+    ;;
+  }
+
+
+
+
+  dimension: days_from_start_first {
+    hidden: yes
+    type: number ## int equivlent
+    sql:
+    {% if pop_name._parameter_value == '28_over_28' %}
+      DATE_DIFF('DAY',DATE_ADD('day', -56, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+      DATE_DIFF('DAY',DATE_ADD('day', -14, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == 'dod' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -2, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == 'yoy_qoq' %}
+      DATE_DIFF('DAY',DATE_ADD('month',-15, CAST(DATE_TRUNC('quarter', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -8, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% else %}
+      DATE_DIFF('DAY', CAST({% date_start first_period_filter %} AS DATE),CAST(${created_date} as DATE))
+    {% endif %} ;;
+  }
+
+  dimension: days_from_start_second {
+    hidden: yes
+    type: number ## int equivlent
+    sql:
+    {% if pop_name._parameter_value == 'yoy_qoq' %}
+      DATE_DIFF('DAY',DATE_ADD('month',-3, CAST(DATE_TRUNC('quarter', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == '28_over_28' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -28, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -7, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == 'dod' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -1, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+      DATE_DIFF('DAY', DATE_ADD('day', -1, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
+    {% else %}
+      DATE_DIFF('DAY', CAST({% date_start second_period_filter %} AS DATE), CAST(${created_date} as DATE))
+    {% endif %};;
+  }
+
+  dimension: days_from_first_period {
+    group_label: "PoP"
+    type: number
+    sql:
+      CASE
+        WHEN ${days_from_start_second} >= 0 then ${days_from_start_second}+1
+        when ${days_from_start_first} >= 0 then ${days_from_start_first}+1
+      end;;
+  }
+
+
+  ## End PoP
   dimension: id {
     primary_key: yes
     type: number
