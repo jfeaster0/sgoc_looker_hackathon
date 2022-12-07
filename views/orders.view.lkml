@@ -57,6 +57,15 @@ view: orders {
           AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH), INTERVAL 3 MONTH)
           then 'First Period'
           END
+    {% elsif pop_name._parameter_value == '28_over_28' %}
+      CASE
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -28 DAY)
+          AND ${created_date} <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -28 DAY), INTERVAL 28 DAY)
+          then 'Second Period'
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY)
+          AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY), INTERVAL 28 DAY)
+          then 'First Period'
+          END
     {% else %}
       CASE
           WHEN ${created_date}  >= CAST( {% date_start first_period_filter %} as DATE)
