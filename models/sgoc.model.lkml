@@ -30,10 +30,24 @@ explore: orders {
 }
 
 explore: order_items {
+  sql_always_where:
+  {% if ${orders.pop_name} == 'a' %}
+  {% elsif ${orders.pop_name} == 'a' %}
+  {% elsif ${orders.pop_name} == 'a' %}
+  {% elsif ${orders.pop_name} == 'a' %}
+  {% elsif orders.first_period_filter._in_query %}
+    (
+    CAST(${orders.created_date} as DATE) >= {% date_start daily_top_domain.first_period_filter %}
+    AND
+    CAST(${orders.created_date} as DATE)< {% date_end daily_top_domain.first_period_filter %}
+    )
+  {% endif %}
+  ;;
   join: inventory_items {
     type: left_outer
     sql_on: ${order_items.inventory_item_id} = ${inventory_items.id} ;;
     relationship: many_to_one
+
   }
 
   join: orders {

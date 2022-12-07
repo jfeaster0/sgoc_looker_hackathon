@@ -13,6 +13,8 @@ view: orders {
   filter: first_period_filter {
     group_label: "PoP"
     type: date
+    sql:
+    ;;
   }
 
   filter: second_period_filter {
