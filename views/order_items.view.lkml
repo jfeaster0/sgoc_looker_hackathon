@@ -85,7 +85,7 @@ view: order_items {
     ## value_format: "#,##0.00"
     sql:
           {% if measure_selector._parameter_value == 'order_items.total_sale_price' %}
-           round(${order_items.sale_price},2)
+           round(${sale_price},2)
           {% elsif measure_selector._parameter_value == 'orders.count' %}
            ${orders.count}
           {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
