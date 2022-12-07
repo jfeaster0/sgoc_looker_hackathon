@@ -66,7 +66,7 @@ view: order_items {
     group_label: "Dynamic Measure"
     allowed_value: {
       label: "Total Sale Price"
-      value: "order_items.total_sale_price"
+      value: "total_sale_price"
     }
     allowed_value: {
       label: "Order Count"
@@ -84,14 +84,14 @@ view: order_items {
     type: number
     ## value_format: "#,##0.00"
     sql:
-          {% if measure_selector._parameter_value == 'order_items.total_sale_price' %}
+          {% if measure_selector._parameter_value == 'total_sale_price' %}
            round(${sale_price},2)
           {% elsif measure_selector._parameter_value == 'orders.count' %}
            ${orders.count}
           {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
            round(${products.total_retail_price},2)
           {% endif %};;
-    html:  {% if measure_selector._parameter_value == 'order_items.total_sale_price' %}
+    html:  {% if measure_selector._parameter_value == 'total_sale_price' %}
            ${{ rendered_value }}
           {% elsif measure_selector._parameter_value == 'orders.count' %}
            {{ rendered_value }}
