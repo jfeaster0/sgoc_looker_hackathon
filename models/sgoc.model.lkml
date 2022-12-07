@@ -22,7 +22,7 @@ explore: orders {
 
 explore: order_items {
   sql_always_where:
-  {% if ${orders.pop_name} == 'yoy_qoq' %}
+  {% if orders.pop_name._parameter_value == 'yoy_qoq' %}
     (
     CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH)
     AND
@@ -36,7 +36,7 @@ explore: order_items {
     )
 
 
-  {% elsif ${orders.pop_name} == '28_over_28' %}
+  {% elsif orders.pop_name._parameter_value == '28_over_28' %}
     (
     CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -28 DAY)
     AND
@@ -44,12 +44,12 @@ explore: order_items {
     )
     or
     (
-    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -56 MONTH)
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY)
     AND
-    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -56 MONTH), INTERVAL 28 MONTH)
+    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY), INTERVAL 28 DAY)
     )
-  {% elsif ${orders.pop_name} == 'a' %}
-  {% elsif ${orders.pop_name} == 'a' %}
+  {% elsif orders.pop_name._parameter_value == 'a' %}
+  {% elsif orders.pop_name._parameter_value == 'a' %}
   {% elsif orders.first_period_filter._in_query %}
     (
     CAST(${orders.created_date} as DATE) >= CAST({% date_start orders.first_period_filter %} as DATE)
