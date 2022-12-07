@@ -4,8 +4,6 @@ connection: "lookerdata"
 # include all the views
 include: "/views/**/*.view"
 
-# Datagroups define a caching policy for an Explore. To learn more,
-# use the Quick Help panel on the right to see documentation.
 
 datagroup: sgoc_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
@@ -13,13 +11,6 @@ datagroup: sgoc_default_datagroup {
 }
 
 persist_with: sgoc_default_datagroup
-
-# Explores allow you to join together different views (database tables) based on the
-# relationships between fields. By joining a view into an Explore, you make those
-# fields available to users for data analysis.
-# Explores should be purpose-built for specific use cases.
-
-# To see the Explore you’re building, navigate to the Explore menu and select an Explore under "Sgoc"
 
 explore: orders {
   join: users {
@@ -31,8 +22,32 @@ explore: orders {
 
 explore: order_items {
   sql_always_where:
-  {% if ${orders.pop_name} == 'a' %}
-  {% elsif ${orders.pop_name} == 'a' %}
+  {% if ${orders.pop_name} == 'yoy_qoq' %}
+    (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH)
+    AND
+    CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH), INTERVAL 3 MONTH)
+    )
+    or
+    (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH)
+    AND
+    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH), INTERVAL 3 MONTH)
+    )
+
+
+  {% elsif ${orders.pop_name} == '28_over_28' %}
+    (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -28 DAY)
+    AND
+    CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -28 DAY), INTERVAL 28 DAY)
+    )
+    or
+    (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -56 MONTH)
+    AND
+    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -56 MONTH), INTERVAL 28 MONTH)
+    )
   {% elsif ${orders.pop_name} == 'a' %}
   {% elsif ${orders.pop_name} == 'a' %}
   {% elsif orders.first_period_filter._in_query %}

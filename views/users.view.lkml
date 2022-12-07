@@ -27,11 +27,6 @@ view: users {
   # Click on the type parameter to see all the options in the Quick Help panel on the right.
 
 
-
-
-
-
-
   measure: total_age {
     type: sum
     sql: ${age} ;;
