@@ -124,11 +124,11 @@ view: order_items {
     type: number
     sql:
     {%if delta_picker._parameter_value == 'change' %}
-    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${delta_value} ,2) else null end
+    round(${delta_value} ,2)
     {% elsif delta_picker._parameter_value == 'prc_change' %}
-    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${delta_prc}*100,2) else null end
+    round(${delta_prc}*100,2)
     {% elsif delta_picker._parameter_value == 'abs_change' %}
-    CASE WHEN ${orders.period_selected} = 'Second Period' THEN round(${abs_delta_value},2) else null end
+    round(${abs_delta_value},2)
     {% endif %}
     ;;
     html:  {% if delta_picker._parameter_value == 'change' %}
@@ -148,11 +148,11 @@ view: order_items {
     type: number
     sql:
     {% if measure_selector._parameter_value == 'total_sale_price' %}
-      sum(${total_sale_price})
+      sum(${total_sale_price}) over ${in_query_testing}
     {% elsif measure_selector._parameter_value == 'orders.count' %}
-      sum(${orders.count})
+      sum(${orders.count}) over ${in_query_testing}
     {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
-      sum(${products.total_retail_price})
+      sum(${products.total_retail_price}) over ${in_query_testing}
     {% else %}
     "ERROR Message - Missing total cacluation for the delta, measure: total_filtered_measure"
     {% endif %};;
@@ -163,8 +163,8 @@ view: order_items {
     group_label: "Compare"
     description: "delta value, not percentage"
     type: number
-    sql:
-    ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure})
+    sql: ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure});;
+    }
 
   dimension: in_query_testing {
     group_label: "Compare"
