@@ -13,8 +13,6 @@ view: orders {
   filter: first_period_filter {
     group_label: "PoP"
     type: date
-    sql:
-    ;;
   }
 
   filter: second_period_filter {
@@ -66,6 +64,33 @@ view: orders {
           then 'Second Period'
           WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY)
           AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -56 DAY), INTERVAL 28 DAY)
+          then 'First Period'
+          END
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+      CASE
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -7 DAY)
+          AND ${created_date} <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -7 DAY), INTERVAL 7 DAY)
+          then 'Second Period'
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -14 DAY)
+          AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -14 DAY), INTERVAL 7 DAY)
+          then 'First Period'
+          END
+    {% elsif pop_name._parameter_value == 'dod' %}
+      CASE
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY)
+          AND ${created_date} <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY), INTERVAL 1 DAY)
+          then 'Second Period'
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -2 DAY)
+          AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY), INTERVAL 1 DAY)
+          then 'First Period'
+          END
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+      CASE
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY)
+          AND ${created_date} <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY), INTERVAL 1 DAY)
+          then 'Second Period'
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -8 DAY)
+          AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY), INTERVAL 1 DAY)
           then 'First Period'
           END
     {% else %}
