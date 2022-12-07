@@ -206,4 +206,46 @@ view: orders {
     type: count
     drill_fields: [id, users.last_name, users.id, users.first_name, order_items.count]
   }
+
+  ### Dynamic measure tool ###
+
+  # for dynamic measure
+  parameter: measure_selector {
+    type: unquoted
+    group_label: "Dynamic Measure"
+    allowed_value: {
+      label: "Total Sale Price"
+      value: "order_items.total_sale_price"
+    }
+    allowed_value: {
+      label: "Order Count"
+      value: "orders.count"
+    }
+    allowed_value: {
+      label: "Total Retail Price"
+      value: "products.total_retail_price"
+    }
+  }
+
+  measure: dynamic_test {
+    label: "Filtered Measure"
+    description: "use measure selector to pick measure"
+    type: number
+    ## value_format: "#,##0.00"
+    sql:
+          {% if measure_selector._parameter_value == 'order_items.total_sale_price' %}
+           round(${order_items.sale_price},2)
+          {% elsif measure_selector._parameter_value == 'orders.count' %}
+           ${orders.count}
+          {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
+           round(${products.total_retail_price},2)
+          {% endif %};;
+    html:  {% if measure_selector._parameter_value == 'order_items.total_sale_price' %}
+           ${{ rendered_value }}
+          {% elsif measure_selector._parameter_value == 'orders.count' %}
+           {{ rendered_value }}
+           {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
+           ${{ rendered_value }}
+          {% endif %};;
+  }
 }
