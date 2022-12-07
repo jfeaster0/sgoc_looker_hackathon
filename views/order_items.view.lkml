@@ -187,6 +187,9 @@ view: order_items {
         {%if order_items.sale_price._is_selected %}
         ${sale_price},
         {%endif%}
+        {%if orders.campaign._is_selected %}
+        ${orders.campaign},
+        {%endif%}
         {% if true %}
         1
         {% endif %}
