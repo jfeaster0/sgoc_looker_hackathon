@@ -38,29 +38,19 @@ explore: order_items {
 
   {% elsif orders.pop_name._parameter_value == '28_over_28' %}
     (
-    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -27 DAY)
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -55 DAY)
     AND
     CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -27 DAY), INTERVAL 28 DAY)
     )
-    or
-    (
-    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -55 DAY)
-    AND
-    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -55 DAY), INTERVAL 28 DAY)
-    )
+
   {% elsif orders.pop_name._parameter_value == '7_over_7' %}
    (
-    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY)
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -13 DAY)
     AND
     CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY), INTERVAL 7 DAY)
     )
-    or
-    (
-    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -13 DAY)
-    AND
-    CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -13 DAY), INTERVAL 7 DAY)
-    )
-  {% elsif orders.pop_name._parameter_value == 'dod' %}
+
+  {% elsif orders.pop_name._parameter_value == 'sdlw' %}
    (
     CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY)
     AND
@@ -73,6 +63,12 @@ explore: order_items {
     CAST( ${orders.created_date} as DATE) <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -8 DAY), INTERVAL 1 DAY)
     )
 
+  {% elsif orders.pop_name._parameter_value == 'dod' %}
+   (
+    CAST( ${orders.created_date} as DATE) >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY)
+    AND
+    CAST( ${orders.created_date} as DATE)<= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY), INTERVAL 1 DAY)
+    )
   {% elsif orders.first_period_filter._in_query %}
     (
     CAST(${orders.created_date} as DATE) >= CAST({% date_start orders.first_period_filter %} as DATE)
