@@ -50,11 +50,11 @@ view: orders {
     sql:
     {% if pop_name._parameter_value == 'yoy_qoq' %}
       CASE
-          WHEN ${created_date} >= DATE_ADD('month',-3, DATE_TRUNC('quarter', cast(TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))
-          AND ${created_date} <= DATE_ADD('month',3, DATE_TRUNC('quarter',DATE_ADD('month',-3, DATE_TRUNC('quarter', cast( TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))))
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH)
+          AND ${created_date} <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH), INTERVAL 3 MONTH)
           then 'Second Period'
-          WHEN ${created_date} >= DATE_ADD('month',-15, DATE_TRUNC('quarter', cast( (TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))
-          AND ${created_date}  <= DATE_ADD('month',3, DATE_TRUNC('quarter',DATE_ADD('month',-15, DATE_TRUNC('quarter', cast( TIMESTAMP('2017-03-25 00:00:00', 'America/Denver') as DATE)))))
+          WHEN ${created_date} >= DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH)
+          AND ${created_date}  <= DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH), INTERVAL 3 MONTH)
           then 'First Period'
           END
     {% else %}
