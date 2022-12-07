@@ -37,9 +37,15 @@ explore: order_items {
   {% elsif ${orders.pop_name} == 'a' %}
   {% elsif orders.first_period_filter._in_query %}
     (
-    CAST(${orders.created_date} as DATE) >= {% date_start daily_top_domain.first_period_filter %}
+    CAST(${orders.created_date} as DATE) >= CAST({% date_start orders.first_period_filter %} as DATE)
     AND
-    CAST(${orders.created_date} as DATE)< {% date_end daily_top_domain.first_period_filter %}
+    CAST(${orders.created_date} as DATE)< Cast({% date_end orders.first_period_filter %} as DATE)
+    )
+    or
+    (
+    CAST(${orders.created_date} as DATE) >= CAST({% date_start orders.second_period_filter %} as DATE)
+    AND
+    CAST(${orders.created_date} as DATE) < Cast({% date_end orders.second_period_filter %} as DATE)
     )
   {% endif %}
   ;;
