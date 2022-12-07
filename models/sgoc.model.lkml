@@ -101,6 +101,11 @@ explore: order_items {
     sql_on: ${orders.user_id} = ${users.id} ;;
     relationship: many_to_one
   }
+  join: product_sheets {
+    type: left_outer
+    sql_on: ${products.id} = ${product_sheets.product_id}  ;;
+    relationship: many_to_one
+  }
 }
 
 # To create more sophisticated Explores that involve multiple views, you can use the join parameter.

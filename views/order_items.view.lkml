@@ -190,6 +190,35 @@ view: order_items {
         {%if orders.campaign._is_selected %}
         ${orders.campaign},
         {%endif%}
+        -- Products section
+        {%if products.brand._is_selected %}
+        ${products.brand},
+        {%endif%}
+        {%if products.category._is_selected %}
+        ${products.category},
+        {%endif%}
+        {%if products.department._is_selected %}
+        ${products.department},
+        {%endif%}
+        {%if products.item_name._is_selected %}
+        ${products.item_name},
+        {%endif%}
+        {%if products.rank._is_selected %}
+        ${products.rank},
+        {%endif%}
+        {%if products.sku._is_selected %}
+        ${products.sku},
+        {%endif%}
+        -- product_sheets
+        {%if product_sheets.custom_grouping._is_selected %}
+        ${product_sheets.custom_grouping},
+        {%endif%}
+        {%if product_sheets.product_id._is_selected %}
+        ${product_sheets.product_id},
+        {%endif%}
+        {%if product_sheets.product_name._is_selected %}
+        ${product_sheets.product_name},
+        {%endif%}
         {% if true %}
         1
         {% endif %}
