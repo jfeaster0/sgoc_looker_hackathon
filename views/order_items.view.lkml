@@ -219,6 +219,36 @@ view: order_items {
         {%if product_sheets.product_name._is_selected %}
         ${product_sheets.product_name},
         {%endif%}
+        -- inventory items
+
+        {%if inventory_items.sold_at._is_selected %}
+        ${inventory_items.sold_at},
+        {%endif%}
+        -- users
+        {%if users.age._is_selected %}
+        ${users.age},
+        {%endif%}
+        {%if users.city._is_selected %}
+        ${users.city},
+        {%endif%}
+        {%if users.country._is_selected %}
+        ${users.country},
+        {%endif%}
+        {%if users.created_date._is_selected %}
+        ${users.created_date},
+        {%endif%}
+        {%if users.gender._is_selected %}
+        ${users.gender},
+        {%endif%}
+        {%if users.state._is_selected %}
+        ${users.state},
+        {%endif%}
+        {%if users.traffic_source._is_selected %}
+        ${users.traffic_source},
+        {%endif%}
+        {%if users.zip._is_selected %}
+        ${users.zip},
+        {%endif%}
         {% if true %}
         1
         {% endif %}
