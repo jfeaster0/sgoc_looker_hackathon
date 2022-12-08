@@ -2,7 +2,7 @@
 project_name: "sgoc"
 
 application: sgoc {
-  label: "sgoc"
+  label: "SGOC"
   #url: "https://localhost:8080/bundle.js"
   file: "bundle.js"
       entitlements: {
