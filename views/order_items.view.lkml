@@ -124,11 +124,11 @@ view: order_items {
     type: number
     sql:
     {%if delta_picker._parameter_value == 'change' %}
-    ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure})
+    round(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}),2)
     {% elsif delta_picker._parameter_value == 'prc_change' %}
-    round((${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0),2)*100
+    round((${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0)*100,2)
     {% elsif delta_picker._parameter_value == 'abs_change' %}
-    abs(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))
+    ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure})
     {% endif %}
     ;;
     html:  {% if delta_picker._parameter_value == 'change' %}
