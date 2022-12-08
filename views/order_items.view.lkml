@@ -177,6 +177,9 @@ view: order_items {
         {%if orders.campaign._is_selected %}
         ${orders.campaign},
         {%endif%}
+        {%if orders.status._is_selected %}
+        ${orders.status},
+        {%endif%}
         {%if products.brand._is_selected %}
         ${products.brand},
         {%endif%}
