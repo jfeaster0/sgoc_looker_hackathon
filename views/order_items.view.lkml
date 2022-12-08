@@ -126,7 +126,7 @@ view: order_items {
     {%if delta_picker._parameter_value == 'change' %}
     ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure})
     {% elsif delta_picker._parameter_value == 'prc_change' %}
-    (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0)
+    round((${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0),2)*100
     {% elsif delta_picker._parameter_value == 'abs_change' %}
     abs(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))
     {% endif %}
@@ -252,7 +252,7 @@ view: order_items {
     description: "Percent Change from First Period to Second Period"
     type: number
     value_format_name: percent_2
-    sql: (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0);;
+    sql: (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0)*100;;
     }
 
 
@@ -267,7 +267,7 @@ view: order_items {
     group_label: "Compare"
     description: "Absolute Change from First Period to Second Period"
     type: number
-    sql: abs(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}));;
+    sql: abs(${filtered_measure}) - abs(${total_filtered_measure} - ${filtered_measure});;
   }
 
 
