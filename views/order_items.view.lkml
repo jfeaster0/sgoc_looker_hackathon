@@ -112,10 +112,6 @@ view: order_items {
       label: "Delta"
       value: "change"
     }
-    allowed_value: {
-      label: "Absolute Delta"
-      value: "abs_change"
-    }
   }
 
   measure: delta {
