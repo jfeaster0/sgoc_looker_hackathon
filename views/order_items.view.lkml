@@ -85,7 +85,7 @@ view: order_items {
     ## value_format: "#,##0.00"
     sql:
           {% if measure_selector._parameter_value == 'total_sale_price' %}
-           ${total_sale_price}
+           round(${total_sale_price},2)
           {% elsif measure_selector._parameter_value == 'orders.count' %}
            ${orders.count}
           {% elsif measure_selector._parameter_value == 'products.total_retail_price' %}
@@ -112,10 +112,6 @@ view: order_items {
       label: "Delta"
       value: "change"
     }
-    allowed_value: {
-      label: "Absolute Delta"
-      value: "abs_change"
-    }
   }
 
   measure: delta {
@@ -124,19 +120,15 @@ view: order_items {
     type: number
     sql:
     {%if delta_picker._parameter_value == 'change' %}
-    round(${delta_value} ,2)
+    round(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}),2)
     {% elsif delta_picker._parameter_value == 'prc_change' %}
-    round(${delta_prc}*100,2)
-    {% elsif delta_picker._parameter_value == 'abs_change' %}
-    round(${abs_delta_value},2)
+    round((${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0)*100,2)
     {% endif %}
     ;;
     html:  {% if delta_picker._parameter_value == 'change' %}
           {{ rendered_value }}
           {% elsif delta_picker._parameter_value == 'prc_change' %}
           {{ rendered_value }} %
-          {% elsif delta_picker._parameter_value == 'abs_change' %}
-          {{ rendered_value }}
           {% endif %};;
   }
 
@@ -159,12 +151,7 @@ view: order_items {
     }
 
 
-  measure: delta_value {
-    group_label: "Compare"
-    description: "delta value, not percentage"
-    type: number
-    sql: ${filtered_measure} - (${total_filtered_measure} - ${filtered_measure});;
-    }
+
 
   dimension: in_query_testing {
     group_label: "Compare"
@@ -190,7 +177,9 @@ view: order_items {
         {%if orders.campaign._is_selected %}
         ${orders.campaign},
         {%endif%}
-        -- Products section
+        {%if orders.status._is_selected %}
+        ${orders.status},
+        {%endif%}
         {%if products.brand._is_selected %}
         ${products.brand},
         {%endif%}
@@ -209,7 +198,6 @@ view: order_items {
         {%if products.sku._is_selected %}
         ${products.sku},
         {%endif%}
-        -- product_sheets
         {%if product_sheets.custom_grouping._is_selected %}
         ${product_sheets.custom_grouping},
         {%endif%}
@@ -219,12 +207,10 @@ view: order_items {
         {%if product_sheets.product_name._is_selected %}
         ${product_sheets.product_name},
         {%endif%}
-        -- inventory items
 
         {%if inventory_items.sold_at._is_selected %}
         ${inventory_items.sold_at},
         {%endif%}
-        -- users
         {%if users.age._is_selected %}
         ${users.age},
         {%endif%}
@@ -261,14 +247,22 @@ view: order_items {
     description: "Percent Change from First Period to Second Period"
     type: number
     value_format_name: percent_2
-    sql: (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/(${total_filtered_measure} - ${filtered_measure});;
+    sql: (${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}))/NULLIF((${total_filtered_measure} - ${filtered_measure}),0)*100;;
     }
+
+
+  measure: delta_value {
+    group_label: "Compare"
+    description: "delta value, not percentage"
+    type: number
+    sql: round(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}),2);;
+  }
 
   measure: abs_delta_value {
     group_label: "Compare"
     description: "Absolute Change from First Period to Second Period"
     type: number
-    sql: abs(${delta_value});;
+    sql: round(${filtered_measure} - (${total_filtered_measure} - ${filtered_measure}),2);;
   }
 
 
