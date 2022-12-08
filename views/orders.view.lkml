@@ -20,6 +20,85 @@ view: orders {
     type: date
   }
 
+  dimension: days_from_first_period {
+    group_label: "Compare"
+    type: string
+    sql:
+    {% if pop_name._parameter_value == 'yoy_qoq' %}
+      CASE
+        WHEN ${days_from_start_second} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH), INTERVAL ${days_from_start_second} DAY) AS DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH), INTERVAL ${days_from_start_first} DAY) AS DATE)
+      end
+    {% elsif pop_name._parameter_value == '28_over_28' %}
+      CASE
+        WHEN ${days_from_start_second} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -27 DAY), INTERVAL ${days_from_start_second} DAY) AS DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -27 DAY), INTERVAL ${days_from_start_first} DAY) AS DATE)
+      end
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+    CASE
+        WHEN ${days_from_start_second} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY), INTERVAL ${days_from_start_second} DAY) AS DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY), INTERVAL ${days_from_start_first} DAY) AS DATE)
+      end
+    {% elsif pop_name._parameter_value == 'dod' %}
+    CASE
+        WHEN ${days_from_start_second} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY), INTERVAL ${days_from_start_second} DAY) AS DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY), INTERVAL ${days_from_start_first} DAY) AS DATE)
+      end
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+    CASE
+        WHEN ${days_from_start_second} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY), INTERVAL ${days_from_start_second} DAY) AS DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST(DATETIME_ADD(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY), INTERVAL ${days_from_start_first} DAY) AS DATE)
+      end
+    {% else %}
+      CASE
+        WHEN ${days_from_start_second} >=  0 THEN CAST (DATETIME_ADD(CAST({% date_start second_period_filter %} AS DATE), INTERVAL ${days_from_start_second} DAY) as DATE)
+        WHEN ${days_from_start_first} >= 0 THEN CAST( DATETIME_ADD(CAST({% date_start second_period_filter %} AS DATE), INTERVAL ${days_from_start_first} DAY) as DATE)
+      end
+    {% endif %}
+      ;;
+  }
+
+  dimension: days_from_start_first {
+    hidden: no
+    type: number
+    sql:
+    {% if pop_name._parameter_value == 'yoy_qoq' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -15 MONTH) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == '28_over_28' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -55 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -13 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == 'dod' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -1 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -7 DAY) as DATE) , DAY)
+    {% else %}
+    DATE_DIFF( ${created_date},CAST({% date_start first_period_filter %} AS DATE), DAY)
+    {% endif %}
+    ;;
+
+  }
+
+  dimension: days_from_start_second {
+    hidden: no
+    type: number
+    sql:
+    {% if pop_name._parameter_value == 'yoy_qoq' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), MONTH)), INTERVAL -3 MONTH) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == '28_over_28' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -27 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == '7_over_7' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL -6 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == 'dod' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY) as DATE) , DAY)
+    {% elsif pop_name._parameter_value == 'sdlw' %}
+    DATE_DIFF( ${created_date},  CAST(DATETIME_ADD(DATETIME(TIMESTAMP_TRUNC(TIMESTAMP('2017-03-25 00:00:00'), DAY)), INTERVAL 0 DAY) as DATE) , DAY)
+    {% else %}
+    DATE_DIFF( ${created_date}, CAST({% date_start second_period_filter %} AS DATE), DAY)
+    {% endif %}
+    ;;
+  }
+
    parameter: pop_name {
     type: unquoted
     group_label: "PoP"
@@ -105,58 +184,6 @@ view: orders {
     {% endif %}
     ;;
   }
-
-
-
-
-  dimension: days_from_start_first {
-    hidden: yes
-    type: number ## int equivlent
-    sql:
-    {% if pop_name._parameter_value == '28_over_28' %}
-      DATE_DIFF('DAY',DATE_ADD('day', -56, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == '7_over_7' %}
-      DATE_DIFF('DAY',DATE_ADD('day', -14, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == 'dod' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -2, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == 'yoy_qoq' %}
-      DATE_DIFF('DAY',DATE_ADD('month',-15, CAST(DATE_TRUNC('quarter', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == 'sdlw' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -8, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% else %}
-      DATE_DIFF('DAY', CAST({% date_start first_period_filter %} AS DATE),CAST(${created_date} as DATE))
-    {% endif %} ;;
-  }
-
-  dimension: days_from_start_second {
-    hidden: yes
-    type: number ## int equivlent
-    sql:
-    {% if pop_name._parameter_value == 'yoy_qoq' %}
-      DATE_DIFF('DAY',DATE_ADD('month',-3, CAST(DATE_TRUNC('quarter', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == '28_over_28' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -28, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == '7_over_7' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -7, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == 'dod' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -1, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% elsif pop_name._parameter_value == 'sdlw' %}
-      DATE_DIFF('DAY', DATE_ADD('day', -1, CAST(DATE_TRUNC('DAY', NOW()) AS DATE)),CAST(${created_date} as DATE))
-    {% else %}
-      DATE_DIFF('DAY', CAST({% date_start second_period_filter %} AS DATE), CAST(${created_date} as DATE))
-    {% endif %};;
-  }
-
-  dimension: days_from_first_period {
-    group_label: "PoP"
-    type: number
-    sql:
-      CASE
-        WHEN ${days_from_start_second} >= 0 then ${days_from_start_second}+1
-        when ${days_from_start_first} >= 0 then ${days_from_start_first}+1
-      end;;
-  }
-
 
   ## End PoP
   dimension: id {
